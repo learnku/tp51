@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{$seo.title}</title>
+    <meta name="Description" content="{$seo.description}">
+    <meta name="Keywords" content="{$seo.keywords}">
+    <meta name="Author" content="GuanJie" />
+</head>
+<body>
+<h2>XSS 攻击</h2>
+<form action="{$form.action}" method="post">
+    <input type="text" name="xss_input" placeholder="" value="<script>alert('xss')</script>">
+    <input type="submit">
+</form>
+
+<hr>
+
+<h2>过滤 XSS 攻击</h2>
+<form action="{$form2.action}" method="post">
+    <input type="text" name="xss_input" value="<script>alert('xss')</script>">
+    <input type="submit">
+</form>
+</body>
+</html>
