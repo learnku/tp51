@@ -10,11 +10,11 @@ class IndexController extends BashController
         $this->data['list'] = [
             [
                 'name' => 'XSS 跨站脚本攻击',
-                'href' => Url::build('study/xss/index'),
+                'href' => Url::build('xss/index'),
             ],
             [
                 'name' => 'SQL 注入攻击',
-                'href' => Url::build(''),
+                'href' => Url::build('sql/index'),
             ],
         ];
         return $this->fetch();

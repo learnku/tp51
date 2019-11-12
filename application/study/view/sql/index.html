@@ -1,0 +1,17 @@
+{layout name="layout" /}
+
+<h2>SQL 注入攻击</h2>
+<form action="{$form.action}" method="POST">
+    <p>Username: <input type="text" name="name" value="admin' or 'foo' = 'foo' -- "/></p>
+    <p>Password: <input type="password" name="password" /></p>
+    <p><input type="submit" value="登陆" /></p>
+</form>
+
+<hr>
+
+<h2>过滤 SQL 注入攻击</h2>
+<form action="{$form2.action}" method="POST">
+    <p>Username: <input type="text" name="name" value="admin' or 'foo' = 'foo' -- "/></p>
+    <p>Password: <input type="password" name="password" /></p>
+    <p><input type="submit" value="登陆" /></p>
+</form>
