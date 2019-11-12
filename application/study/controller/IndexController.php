@@ -9,9 +9,13 @@ class IndexController extends BashController
     {
         $this->data['list'] = [
             [
-                'name' => 'Xss 攻击演示',
+                'name' => 'XSS 跨站脚本攻击',
                 'href' => Url::build('study/xss/index'),
-            ]
+            ],
+            [
+                'name' => 'SQL 注入攻击',
+                'href' => Url::build(''),
+            ],
         ];
         return $this->fetch();
     }
