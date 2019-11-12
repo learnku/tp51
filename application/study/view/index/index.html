@@ -1,14 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <ol>
-        {foreach $list as $key=>$item }
-        <li><a href="{$item.href}">{$item.name}</a></li>
-        {/foreach}
-    </ol>
-</body>
-</html>
+{layout name="layout" /}
+<ol>
+    {foreach $list as $key=>$item }
+    <li><a href="{$item.href}">{$item.name}</a></li>
+    {/foreach}
+</ol>
