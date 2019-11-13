@@ -9,6 +9,10 @@ class IndexController extends BashController
     {
         $this->data['list'] = [
             [
+                'name' => 'PHP HASH 密码',
+                'href' => Url::build('password/index'),
+            ],
+            [
                 'name' => 'PHP 公私钥加解密',
                 'href' => Url::build('openssl/index'),
             ],
