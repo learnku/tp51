@@ -1,0 +1,8 @@
+{layout name="layout" /}
+
+<h2>演示 csrf/xsrf 攻击</h2>
+<form action="{$form.action}" method="post">
+    <input type="hidden" name="csrf" value="{$form.csrf}">
+    <input type="hidden" name="confirm" value="yes" />
+    <input type="submit" value="Delete my account" />
+</form>

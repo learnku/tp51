@@ -24,6 +24,10 @@ class IndexController extends BashController
                 'name' => 'SQL 注入攻击',
                 'href' => Url::build('sql/index'),
             ],
+            [
+                'name' => 'XSRF/CSRF 跨站请求伪造  ',
+                'href' => Url::build('csrf/index'),
+            ],
         ];
         return $this->fetch();
     }
