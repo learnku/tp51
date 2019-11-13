@@ -14,6 +14,21 @@ class PasswordController
 
     public function index()
     {
+        echo <<<pre
+<h2>即使被拖库，也可以保证密码不泄露</h2>
+<ol>
+    <li>`md5(md5(password) + salt)`</li>
+    <li>`SHA512(SHA512(password) + salt)`</li>
+    <li>`bcrypt(SHA512(password), salt, cost)`</li>
+</ol>
+<h2>本例使用</h2>
+<ol>
+    <li>`valueHash = password_hash(value, PASSWORD_BCRYPT);`</li>
+    <li>`result = password_verify(value, valueHash);`</li>
+</ol>
+pre;
+        echo '<hr>';
+
         $password = htmlspecialchars('guanjie');
 
         echo '使用  `password_hash()` 函数加密密码 `liguanjie`' . '<br>';
