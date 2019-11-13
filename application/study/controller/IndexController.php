@@ -9,6 +9,10 @@ class IndexController extends BashController
     {
         $this->data['list'] = [
             [
+                'name' => 'PHP 公私钥加解密',
+                'href' => Url::build('openssl/index'),
+            ],
+            [
                 'name' => 'XSS 跨站脚本攻击',
                 'href' => Url::build('xss/index'),
             ],
@@ -18,5 +22,10 @@ class IndexController extends BashController
             ],
         ];
         return $this->fetch();
+    }
+
+    public function phpinfo()
+    {
+        phpinfo();
     }
 }
