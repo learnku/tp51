@@ -13,6 +13,8 @@
 // | 中间件配置
 // +----------------------------------------------------------------------
 return [
-    // 默认中间件命名空间
+    // ip 黑名单
     'ip' => \app\http\middleware\Ip::class,
+    // 访问速率限制
+    'rate_limit' => \app\http\middleware\RateLimit::class,
 ];
