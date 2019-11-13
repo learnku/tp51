@@ -10,5 +10,5 @@ use app\common\controller\BaseController as CommonBaseController;
 
 class BashController extends CommonBaseController
 {
-
+    protected $middleware = ['ip'];
 }
