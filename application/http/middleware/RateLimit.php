@@ -22,16 +22,14 @@ class RateLimit
         $redis = $this->redisClient();
 
         // 60s 允许 10次访问
-        $limit = 10;        // X-RateLimit-Limit        同一个时间段所允许的请求的最大数目
-        $remaining = 10;    // X-RateLimit-Remaining    在当前时间段内剩余的请求的数量
-        $reset = 60;        // X-RateLimit-Reset        为了得到最大请求数所需等待的秒数
-        $expire = 60;
+        $limit = 10;            // X-RateLimit-Limit        同一个时间段所允许的请求的最大数目
+        $remaining = 10;        // X-RateLimit-Remaining    在当前时间段内剩余的请求的数量
+        $reset = $expire = 60;  // X-RateLimit-Reset        为了得到最大请求数所需等待的秒数
 
         // 响应给前端查看
         $header = [
             'X-RateLimit-Limit' => 10,
             'X-RateLimit-Remaining' => 10,
-            'X-RateLimit-Reset' => 60,
         ];
 
         if (!$redis->exists($key)) {
@@ -48,16 +46,13 @@ class RateLimit
             $header['X-RateLimit-Remaining'] = $redis->decr($key);
         }
 
-
-        // 剩余过期时间
-        $header['X-RateLimit-Reset'] = $redis->ttl($key);
-
         if ($redis->exists($key) && $expire <= 0) {
             return json([
                 'status_code'=> 429,
                 'message' => 'Too Many Requests',
             ], 429, array_merge($header, [
                 'X-RateLimit-Remaining' => 0,
+                'X-RateLimit-Reset'=> $redis->ttl($key) . 's',  // 剩余过期时间
             ]));
         }
 
