@@ -2,59 +2,77 @@
 
 namespace app\http\middleware;
 
-use think\console\Table;
 use think\facade\Cache;
-use think\facade\Response;
 use think\Request;
 
 /**
  * 访问速率限制中间件
+ * @ 调用方式
+ * @    1、$middleware = ['ip', 'rate_limit']                # 使用默认值
+ * @    2、$middleware = ['ip', ['rate_limit', [30, 60]]]    # 60 秒内最多 30 次调用
  * @redis https://github.com/nicolasff/phpredis
  * @package app\http\middleware
  */
 class RateLimit
 {
-    public function handle(Request $request, \Closure $next)
+    /**
+     * @param Request $request
+     * @param \Closure $next
+     * @param array $params 示例：[30, 60]  --- 60 秒内最多 30 次的调用【limit, reset】
+     * @return mixed|\think\response\Json
+     */
+    public function handle(Request $request, \Closure $next, $params)
     {
+        $this->getKey($request);
+        halt(md5(uniqid(mt_rand(), true)));
+        session('jiejie', 'liguanjie');
+        halt(session('jiejie'));
+        // halt($request);
+
+        // 默认 60s 允许 60次访问
+        $params = $params ?? [60, 60];
         $response = $next($request);
 
-        $key = $request->ip();   // 以 ip 作为键
+        // 以 ip 作为键
+        $key = $request->ip();
+        // redis 实例
         $redis = $this->redisClient();
 
-        // 60s 允许 10次访问
-        $limit = 10;            // X-RateLimit-Limit        同一个时间段所允许的请求的最大数目
-        $remaining = 10;        // X-RateLimit-Remaining    在当前时间段内剩余的请求的数量
-        $reset = $expire = 60;  // X-RateLimit-Reset        为了得到最大请求数所需等待的秒数
+        // X-RateLimit-Limit        同一个时间段所允许的请求的最大数目
+        // X-RateLimit-Remaining    在当前时间段内剩余的请求的数量
+        // X-RateLimit-Reset        为了得到最大请求数所需等待的毫秒数
+        $limit  = $params[0];       // 限制次数
+        $reset = $params[1];        // 限制时间周期
 
-        // 响应给前端查看
+        // 响应给前端的 header
         $header = [
-            'X-RateLimit-Limit' => 10,
-            'X-RateLimit-Remaining' => 10,
+            'X-RateLimit-Limit' => $limit,
+            'X-RateLimit-Remaining' => intval($limit) - 1,
         ];
 
+        // 创建并存入 redis
         if (!$redis->exists($key)) {
             // 将当前时间段剩余的请求量存入 redis
             $redis->set($key, $limit, $reset);
 
-            // 设置过期时间
+            // 设置过期时间(s)
             // $redis->expire($key, $reset);
-        } else {
-            // 获取过期时间
-            $expire = $redis->get($key);
-
-            // 递减
-            $header['X-RateLimit-Remaining'] = $redis->decr($key);
         }
 
-        if ($redis->exists($key) && $expire <= 0) {
+        // 剩余请求数 <= 0
+        // 超频访问
+        if ($redis->get($key) <= 0) {
             return json([
                 'status_code'=> 429,
                 'message' => 'Too Many Requests',
             ], 429, array_merge($header, [
                 'X-RateLimit-Remaining' => 0,
-                'X-RateLimit-Reset'=> $redis->ttl($key) . 's',  // 剩余过期时间
+                'X-RateLimit-Reset'=> $redis->ttl($key) . 's',  // 剩余过期时间(s)
             ]));
         }
+
+        // 递减
+        $header['X-RateLimit-Remaining'] = $redis->decr($key);
 
         // 输出到 header 头中
         foreach ($header as $key=> $item) {
@@ -62,6 +80,23 @@ class RateLimit
         }
 
         return $response;
+    }
+
+    /**
+     * 获取 key
+     * @param Request $request
+     * @return string
+     */
+    protected function getKey(Request $request)
+    {
+        $user_id = session('user_id');
+        // 如果用户已登录
+        if ($user_id) {
+            return sha1($request->domain() . '|' .$user_id);
+        }
+
+        // 否则使用访客 ip
+        return sha1($request->domain() . '|' . $request->ip());
     }
 
 
