@@ -23,18 +23,12 @@ class RateLimit
      */
     public function handle(Request $request, \Closure $next, $params)
     {
-        $this->getKey($request);
-        halt(md5(uniqid(mt_rand(), true)));
-        session('jiejie', 'liguanjie');
-        halt(session('jiejie'));
-        // halt($request);
-
         // 默认 60s 允许 60次访问
         $params = $params ?? [60, 60];
         $response = $next($request);
 
         // 以 ip 作为键
-        $key = $request->ip();
+        $key = $this->getKey($request);
         // redis 实例
         $redis = $this->redisClient();
 
@@ -92,11 +86,11 @@ class RateLimit
         $user_id = session('user_id');
         // 如果用户已登录
         if ($user_id) {
-            return sha1($request->domain() . '|' .$user_id);
+            return 'RateLimit__' . sha1($request->domain() . '|' .$user_id);
         }
 
         // 否则使用访客 ip
-        return sha1($request->domain() . '|' . $request->ip());
+        return 'RateLimit__' . sha1($request->domain() . '|' . $request->ip());
     }
 
 
